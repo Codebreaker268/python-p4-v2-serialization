@@ -21,5 +21,37 @@ def index():
     return make_response(body, 200)
 
 
+@app.route('/pets')
+def pets():
+    petz=Pet.query.all()
+    body=[pet.to_dict() for pet in petz]
+    status=200
+
+
+    return make_response(body,status)
+
+@app.route('/pets/<int:id>')
+def pet_by_id(id):
+    pet=Pet.query.filter(Pet.id==id).first()
+
+    if pet:
+        body=pet.to_dict()
+        status=200
+
+    return make_response(body,status)  
+
+@app.route('/species/<string:species>')
+def species(species):
+    pets=[]
+    for pet in Pet.query.filter_by(species=species).all():
+        pets.append(pet.to_dict())
+
+    body={
+        'count':len(pets),
+        'pets':pets
+    }      
+    return make_response(body,200)
+
+
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
